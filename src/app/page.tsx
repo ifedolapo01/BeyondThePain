@@ -28,7 +28,7 @@ export default function Home() {
         variants={container}
         initial="hidden"
         animate="show"
-        className="text-center pt-16 md:pt-24 max-w-3xl mx-auto"
+        className="text-center pt-16 md:pt-24 max-w-3xl mx-auto px-4"
       >
         <motion.h1 variants={item} className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 mb-6 leading-tight">
           Your Voice Matters Here. <br />
@@ -67,7 +67,9 @@ export default function Home() {
             View all &rarr;
           </Link>
         </div>
-        <FeaturedStories />
+        <div className="px-4 md:px-0">
+          <FeaturedStories />
+        </div>
       </section>
     </div>
   );

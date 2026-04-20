@@ -92,7 +92,7 @@ export default function StoryPage({ params }: { params: Promise<{ id: string }> 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="max-w-3xl mx-auto pt-8 pb-16 bg-white p-8 md:p-12 rounded-3xl border border-gray-100 shadow-sm mt-4"
+      className="max-w-3xl mx-auto pt-4 pb-16 bg-white p-5 md:p-12 rounded-3xl border border-gray-100 shadow-sm mt-4"
     >
       <Link href="/stories" className="inline-block text-sm text-gray-500 hover:text-accent transition-colors mb-8 font-medium">
         &larr; Back to Stories
@@ -119,11 +119,11 @@ export default function StoryPage({ params }: { params: Promise<{ id: string }> 
 
       <div className="mt-16 pt-8 border-t border-gray-100">
         <h3 className="text-sm font-medium text-gray-500 mb-4 uppercase tracking-wide block">React to this story</h3>
-        <div className="flex gap-4">
+        <div className="flex flex-wrap gap-3">
           <button 
             onClick={() => handleReaction('empathyCount')}
             disabled={reacted['empathyCount']}
-            className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all font-medium border group ${
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-full transition-all font-medium border group ${
               reacted['empathyCount'] 
                 ? 'bg-red-50 text-red-500 border-red-100 cursor-default' 
                 : 'bg-gray-50 text-gray-600 hover:bg-red-50 hover:text-red-500 border-gray-200'
@@ -140,7 +140,7 @@ export default function StoryPage({ params }: { params: Promise<{ id: string }> 
           <button 
             onClick={() => handleReaction('strengthCount')}
             disabled={reacted['strengthCount']}
-            className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all font-medium border group ${
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-full transition-all font-medium border group ${
               reacted['strengthCount'] 
                 ? 'bg-orange-50 text-orange-500 border-orange-100 cursor-default' 
                 : 'bg-gray-50 text-gray-600 hover:bg-orange-50 hover:text-orange-500 border-gray-200'

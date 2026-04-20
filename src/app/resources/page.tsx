@@ -93,13 +93,13 @@ export default function ResourcesPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="flex gap-2 justify-center mb-12 flex-wrap"
+        className="flex gap-2 justify-start md:justify-center mb-10 flex-nowrap overflow-x-auto pb-2 px-1 scrollbar-none"
       >
         {categories.map((category) => (
           <button
             key={category}
             onClick={() => setActiveCategory(category)}
-            className={`px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 border ${
+            className={`px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 border whitespace-nowrap flex-shrink-0 ${
               activeCategory === category
                 ? 'bg-[#008080] text-white border-[#008080] shadow-md shadow-[#008080]/20 scale-105'
                 : 'bg-white border-gray-200 text-gray-500 hover:border-[#008080]/40 hover:text-[#008080]'

@@ -109,13 +109,13 @@ export default function StoriesPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="flex gap-3 justify-center mb-12 flex-wrap"
+        className="flex gap-2 justify-start md:justify-center mb-10 flex-nowrap overflow-x-auto pb-2 px-1 scrollbar-none"
       >
         {categories.map((category) => (
           <button
             key={category}
             onClick={() => setActiveCategory(category)}
-            className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 block shadow-sm border ${
+            className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 block shadow-sm border whitespace-nowrap flex-shrink-0 ${
               activeCategory === category
                 ? 'bg-accent text-white border-accent shadow-md scale-105'
                 : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'

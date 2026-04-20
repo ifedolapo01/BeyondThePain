@@ -323,9 +323,10 @@ export default function AdminDashboard() {
       </div>
 
       {/* Controls */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
-        {/* Tabs */}
-        <div className="flex gap-1 bg-gray-100 p-1.5 rounded-2xl w-fit">
+      <div className="flex flex-col gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row gap-3 sm:items-center justify-between">
+          {/* Tabs */}
+          <div className="flex gap-1 bg-gray-100 p-1.5 rounded-2xl w-fit">
           {(['stories', 'resources', 'comments'] as Tab[])
             .filter(tab => tab !== 'comments' || viewMode === 'archived')
             .map((tab) => (
@@ -341,10 +342,10 @@ export default function AdminDashboard() {
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
           ))}
-        </div>
+          </div>
 
-        {/* View Mode Toggle */}
-        <div className="flex bg-white items-center p-1 rounded-2xl border border-gray-100 shadow-sm">
+          {/* View Mode Toggle */}
+          <div className="flex bg-white items-center p-1 rounded-2xl border border-gray-100 shadow-sm w-fit">
           <button
             onClick={() => setViewMode('active')}
             className={`px-6 py-2 rounded-xl text-xs font-bold transition-all ${
@@ -365,6 +366,7 @@ export default function AdminDashboard() {
           >
             Archived
           </button>
+          </div>
         </div>
       </div>
 
