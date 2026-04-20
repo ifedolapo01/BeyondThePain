@@ -20,6 +20,8 @@ export default function AdminLoginPage() {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      // Initialize activity timestamp for the session
+      localStorage.setItem('admin_last_active', Date.now().toString());
       router.push('/admin');
     } catch (err: any) {
       console.error("Login error:", err);

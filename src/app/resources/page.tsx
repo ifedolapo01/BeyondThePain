@@ -11,6 +11,7 @@ export default function ResourcesPage() {
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const categories = ['All', 'Hospital', 'Treatment', 'Lifestyle', 'General'];
 
@@ -37,9 +38,14 @@ export default function ResourcesPage() {
     fetchResources();
   }, []);
 
-  const filteredResources = resources.filter(res => 
-    activeCategory === 'All' ? true : res.category === activeCategory
-  );
+  const filteredResources = resources.filter(res => {
+    const matchesCategory = activeCategory === 'All' ? true : res.category === activeCategory;
+    const matchesSearch = 
+      res.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (res.content || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (res.category || '').toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   return (
     <div className="max-w-5xl mx-auto pt-8 px-4">
@@ -51,9 +57,35 @@ export default function ResourcesPage() {
         <h1 className="text-4xl font-black tracking-tight text-gray-900 mb-4">
           Community <span className="text-[#008080]">Hub</span>
         </h1>
-        <p className="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed">
+        <p className="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed mb-8">
           A collective knowledge base for the sickle cell community. Find recommended hospitals, treatment tips, and lifestyle advice shared by people who understand.
         </p>
+
+        {/* Search Bar */}
+        <div className="max-w-md mx-auto relative group">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <svg className="h-5 w-5 text-gray-400 group-focus-within:text-[#008080] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <input
+            type="text"
+            placeholder="Search insights, hospitals, or tips..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="block w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-2xl leading-5 focus:outline-none focus:ring-2 focus:ring-[#008080]/20 focus:border-[#008080] transition-all shadow-sm text-sm"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
       </motion.div>
 
       {/* Category Filter */}
@@ -96,18 +128,32 @@ export default function ResourcesPage() {
       ) : (
         <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-200">
            <div className="w-16 h-16 bg-[#008080]/10 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">
-            💡
+             {searchQuery ? '🔍' : '💡'}
           </div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">No {activeCategory.toLowerCase()} insights yet</h3>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">
+            {searchQuery ? 'No matching insights found' : `No ${activeCategory.toLowerCase()} insights yet`}
+          </h3>
           <p className="text-gray-500 mb-8 max-w-sm mx-auto">
-            Be the first to share helpful information in this category.
+            {searchQuery 
+              ? "We couldn't find any resources matching your search. Try different keywords."
+              : `Be the first to share helpful information in this category.`
+            }
           </p>
-          <Link
-            href="/submit?type=resource"
-            className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-[#008080] text-white hover:bg-[#006666] transition-all font-bold shadow-lg shadow-[#008080]/10"
-          >
-            Share an Insight
-          </Link>
+          {searchQuery ? (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="text-[#008080] font-bold hover:underline"
+            >
+              Clear Search
+            </button>
+          ) : (
+            <Link
+              href="/submit?type=resource"
+              className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-[#008080] text-white hover:bg-[#006666] transition-all font-bold shadow-lg shadow-[#008080]/10"
+            >
+              Share an Insight
+            </Link>
+          )}
         </div>
       )}
 

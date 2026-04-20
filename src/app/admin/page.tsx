@@ -16,6 +16,7 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { db, auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useIdleAuth } from '@/hooks/useIdleAuth';
 
 type Tab = 'stories' | 'resources' | 'comments';
 type ViewMode = 'active' | 'archived';
@@ -49,6 +50,7 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<Tab>('stories');
   const [viewMode, setViewMode] = useState<ViewMode>('active');
   const [items, setItems] = useState<ModerateItem[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [isFetching, setIsFetching] = useState(false);
   
   // Detail View State
@@ -228,8 +230,30 @@ export default function AdminDashboard() {
   };
 
   const handleLogout = async () => {
+    localStorage.removeItem('admin_last_active');
     await signOut(auth);
     router.push('/admin/login');
+  };
+
+  const filteredItems = items.filter(item => {
+    const query = searchQuery.toLowerCase();
+    return (
+      item.id.toLowerCase().includes(query) ||
+      (item.title || '').toLowerCase().includes(query) ||
+      (item.content || '').toLowerCase().includes(query) ||
+      (item.story || '').toLowerCase().includes(query) ||
+      (item.snippet || '').toLowerCase().includes(query) ||
+      (item.authorName || '').toLowerCase().includes(query)
+    );
+  });
+
+  // Auto-logout after 5 minutes of inactivity
+  const { timeRemaining } = useIdleAuth(300000, handleLogout);
+
+  const formatTime = (ms: number) => {
+    const minutes = Math.floor(ms / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   if (loading) return (
@@ -244,16 +268,51 @@ export default function AdminDashboard() {
     <div className="max-w-6xl mx-auto py-10 px-4">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-        <div>
+        <div className="flex-1">
           <h1 className="text-3xl font-black text-gray-900 leading-none">Moderation <span className="text-accent">Desk</span></h1>
           <p className="text-gray-500 mt-2">Managing community health and safety</p>
+          
+          {/* Admin Search Bar */}
+          <div className="mt-6 max-w-md relative group">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <svg className="h-4 w-4 text-gray-400 group-focus-within:text-accent transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Search by ID, Title, Author or Content..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="block w-full pl-10 pr-4 py-2.5 bg-white border border-gray-100 rounded-xl leading-5 focus:outline-none focus:ring-2 focus:ring-accent/10 focus:border-accent transition-all shadow-sm text-xs font-medium"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600"
+              >
+                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
         </div>
         
-        <div className="flex items-center gap-4 bg-white p-2 rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
+        <div className="flex items-center gap-4 bg-white p-2 rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md h-fit">
           <div className="hidden sm:block text-right px-2">
             <p className="text-xs font-bold text-gray-900">{user.email}</p>
             <p className="text-[10px] text-gray-400 uppercase tracking-widest font-black">Admin Access</p>
           </div>
+
+          <div className={`px-4 py-2.5 rounded-xl text-[10px] font-black transition-all border ${
+            timeRemaining < 60000 
+              ? 'bg-red-50 text-red-600 border-red-100 animate-pulse' 
+              : 'bg-gray-50 text-gray-500 border-transparent'
+          }`}>
+            SESSION EXPIRES: {formatTime(timeRemaining)}
+          </div>
+
           <button 
             onClick={handleLogout}
             className="px-5 py-2.5 bg-gray-50 hover:bg-red-50 hover:text-red-600 rounded-xl text-sm font-bold transition-all"
@@ -334,18 +393,33 @@ export default function AdminDashboard() {
               Retry Connection
             </button>
           </div>
-        ) : items.length === 0 ? (
+        ) : filteredItems.length === 0 ? (
           <div className="bg-white rounded-3xl border border-gray-100 flex flex-col items-center justify-center py-32 text-center px-4">
             <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
               <svg className="w-10 h-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={searchQuery ? "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" : "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"} />
               </svg>
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">No {viewMode === 'active' ? 'published' : 'archived'} {activeTab} yet</h3>
-            <p className="text-gray-500 max-w-sm">Everything looks clean in this section.</p>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">
+              {searchQuery ? 'No matching items found' : `No ${viewMode === 'active' ? 'published' : 'archived'} ${activeTab} yet`}
+            </h3>
+            <p className="text-gray-500 max-w-sm">
+              {searchQuery 
+                ? "Try adjusting your search query or switching tabs."
+                : "Everything looks clean in this section."
+              }
+            </p>
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="mt-6 text-accent font-bold hover:underline text-sm"
+              >
+                Clear Search Results
+              </button>
+            )}
           </div>
         ) : (
-          items.map((item) => (
+          filteredItems.map((item) => (
             <motion.div 
               key={item.id}
               layout
