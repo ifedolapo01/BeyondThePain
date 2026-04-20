@@ -19,14 +19,18 @@ export default function FeaturedStories() {
   useEffect(() => {
     const fetchStories = async () => {
       try {
-        const q = query(collection(db, "stories"), orderBy("createdAt", "desc"), limit(3));
+        // Fetch slightly more to account for archived stories, then take top 3
+        const q = query(collection(db, "stories"), orderBy("createdAt", "desc"), limit(10));
         const querySnapshot = await getDocs(q);
         const fetchedStories: Story[] = [];
         querySnapshot.forEach((doc) => {
-          fetchedStories.push({
-            id: doc.id,
-            ...(doc.data() as Omit<Story, 'id'>)
-          });
+          const data = doc.data();
+          if (data.status !== 'archived' && fetchedStories.length < 3) {
+            fetchedStories.push({
+              id: doc.id,
+              ...(data as Omit<Story, 'id'>)
+            });
+          }
         });
         setStories(fetchedStories);
       } catch (error) {

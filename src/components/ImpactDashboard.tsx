@@ -21,16 +21,26 @@ export default function ImpactDashboard() {
         
         let storyCount = 0;
         let supportCount = 0;
+        let resourceCount = 0;
 
         storiesSnap.forEach((doc) => {
           const data = doc.data();
-          storyCount++;
-          supportCount += (data.empathyCount || 0) + (data.strengthCount || 0);
+          if (data.status !== 'archived') {
+            storyCount++;
+            supportCount += (data.empathyCount || 0) + (data.strengthCount || 0);
+          }
+        });
+
+        resourcesSnap.forEach((doc) => {
+          const data = doc.data();
+          if (data.status !== 'archived') {
+            resourceCount++;
+          }
         });
 
         setStats({
           totalStories: storyCount,
-          totalInsights: resourcesSnap.size,
+          totalInsights: resourceCount,
           totalSupport: supportCount
         });
       } catch (error) {
