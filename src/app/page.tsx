@@ -1,65 +1,74 @@
-import Image from "next/image";
+"use client";
+
+import Link from 'next/link';
+import FeaturedStories from '@/components/FeaturedStories';
+import ImpactDashboard from '@/components/ImpactDashboard';
+import { motion } from 'framer-motion';
 
 export default function Home() {
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="flex flex-col gap-16 pb-12">
+      {/* Hero Section */}
+      <motion.section 
+        variants={container}
+        initial="hidden"
+        animate="show"
+        className="text-center pt-16 md:pt-24 max-w-3xl mx-auto"
+      >
+        <motion.h1 variants={item} className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 mb-6 leading-tight">
+          Your Voice Matters Here. <br />
+          <span className="text-accent lg:text-5xl text-glow">Beyond the Medical Report.</span>
+        </motion.h1>
+        <motion.p variants={item} className="text-lg md:text-xl text-gray-600 mb-10 leading-relaxed font-light">
+          A calm and supportive space to share what it really feels like to live with or care for someone with sickle cell emotionally, mentally and practically.
+        </motion.p>
+        <motion.div variants={item} className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <Link
+            href="/submit"
+            className="w-full sm:w-auto px-8 py-4 rounded-full bg-accent text-white hover:bg-accent-hover transition-all font-semibold shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            Share Your Journey
+          </Link>
+          <Link
+            href="/resources"
+            className="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-secondary border-2 border-secondary/20 hover:border-secondary hover:bg-secondary/5 transition-all font-semibold shadow-sm hover:-translate-y-1 active:scale-95"
           >
-            Documentation
-          </a>
+            Explore Knowledge Hub
+          </Link>
+        </motion.div>
+      </motion.section>
+
+      {/* Impact Dashboard */}
+      <section className="max-w-4xl mx-auto w-full px-4">
+        <h2 className="text-center text-sm font-bold uppercase tracking-[0.2em] text-gray-400 mb-8">Our Collective Impact</h2>
+        <ImpactDashboard />
+      </section>
+
+      {/* Featured Stories */}
+      <section>
+        <div className="flex items-center justify-between mb-8 px-4 md:px-0">
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900">Featured Stories</h2>
+          <Link href="/stories" className="text-sm font-medium text-accent hover:text-accent-hover">
+            View all &rarr;
+          </Link>
         </div>
-      </main>
+        <FeaturedStories />
+      </section>
     </div>
   );
 }
