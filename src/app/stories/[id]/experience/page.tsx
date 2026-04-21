@@ -28,12 +28,17 @@ export default function StoryExperiencePage({ params }: { params: Promise<{ id: 
             ?.map((s: string) => s.trim()) || [storyText.trim()];
             
           let formattedParts: StoryPart[] = [];
+          
+          // Add introductory prompt as a standalone part
+          if (sentences.length > 2) {
+              formattedParts.push({ text: "", prompt: "Pause. Step into their shoes for a moment." });
+          }
+
           for (let i = 0; i < sentences.length; i += 2) {
               const chunk = sentences.slice(i, i + 2).join(" ").trim();
               if (chunk.length > 0) {
                   let prompt;
-                  if (i === 0 && sentences.length > 4) prompt = "Pause. Step into their shoes for a moment.";
-                  else if (i === Math.floor(sentences.length / 2)) prompt = "Take a breath.";
+                  if (i === Math.floor(sentences.length / 2)) prompt = "Take a breath.";
                   
                   formattedParts.push({ text: chunk, prompt });
               }

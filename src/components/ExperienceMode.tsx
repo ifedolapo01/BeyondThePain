@@ -109,44 +109,38 @@ export default function ExperienceMode({ parts, storyId }: Props) {
             </Link>
         </div>
 
-        {/* Prompt */}
-        <div className="h-16 flex items-end justify-center mb-8">
-          <AnimatePresence mode="wait">
-            {part?.prompt && (
-              <motion.p
-                key={`prompt-${step}`}
-                className="text-sm text-accent/80 font-serif italic"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 1 }}
-              >
-                {part.prompt}
-              </motion.p>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Text Area */}
-        <div className="min-h-[200px] flex items-center justify-center relative w-full">
+        {/* Content Area */}
+        <div className="flex flex-col items-center justify-center w-full min-h-[300px]">
           <AnimatePresence mode="wait">
             {step < parts.length && (
-              <motion.p
-                key={`text-${step}`}
-                className="text-xl md:text-2xl leading-relaxed md:leading-loose font-serif font-light opacity-90"
+              <motion.div
+                key={`part-${step}`}
+                className="flex flex-col items-center justify-center w-full"
                 initial={{ opacity: 0, filter: "blur(10px)", y: 10 }}
                 animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
                 exit={{ opacity: 0, filter: "blur(4px)", y: -10 }}
                 transition={{ duration: 0.8, ease: "easeInOut" }}
               >
-                {part?.text}
-              </motion.p>
+                {/* Prompt */}
+                {part?.prompt && (
+                  <div className={`font-serif italic text-accent/80 transition-all ${(!part?.text || part.text.length === 0) ? "text-2xl md:text-3xl font-light mb-0" : "text-lg mb-8"}`}>
+                    {part.prompt}
+                  </div>
+                )}
+
+                {/* Text Area */}
+                {part?.text && part.text.length > 0 && (
+                  <div className="text-xl md:text-2xl leading-relaxed md:leading-loose font-serif font-light opacity-90 w-full">
+                    {part.text}
+                  </div>
+                )}
+              </motion.div>
             )}
           </AnimatePresence>
         </div>
 
         {/* Progress & Controls */}
-        <div className="mt-16 h-32 flex flex-col items-center justify-start w-full">
+        <div className="mt-8 h-32 flex flex-col items-center justify-start w-full">
           {step < parts.length ? (
             <p className="text-xs text-gray-700 tracking-[0.2em] uppercase mb-8">
               {step + 1} / {parts.length}
@@ -169,10 +163,10 @@ export default function ExperienceMode({ parts, storyId }: Props) {
                   Start Again
                 </button>
                 <Link 
-                  href={`/stories/${storyId}`}
+                  href={`/stories/${storyId}#comments`}
                   className="px-8 py-3 rounded-full bg-accent text-white hover:bg-accent/90 transition-colors text-sm tracking-wide shadow-lg shadow-accent/20"
                 >
-                  Return to Story
+                  Comment
                 </Link>
               </div>
             </motion.div>

@@ -69,6 +69,18 @@ export default function StoryPage({ params }: { params: Promise<{ id: string }> 
     }
   };
 
+  // Ensure hash links (like #comments) scroll after data loads
+  useEffect(() => {
+    if (!loading && storyData && window.location.hash === '#comments') {
+      setTimeout(() => {
+        const el = document.getElementById('comments');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [loading, storyData]);
+
   if (loading) {
     return (
       <div className="flex justify-center items-center py-20 min-h-[50vh]">
@@ -165,7 +177,9 @@ export default function StoryPage({ params }: { params: Promise<{ id: string }> 
         </div>
       </div>
 
-      <CommentSection storyId={id} />
+      <div id="comments" className="pt-8">
+        <CommentSection storyId={id} />
+      </div>
     </motion.article>
   );
 }
