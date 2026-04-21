@@ -113,6 +113,14 @@ export default function StoryPage({ params }: { params: Promise<{ id: string }> 
         </div>
       </div>
       
+      {storyData.category !== "Observer" && (
+        <div className="mb-10 text-center md:text-left">
+          <Link href={`/stories/${id}/experience`} className="inline-flex items-center gap-2 bg-black text-white px-8 py-3 rounded-full font-medium shadow-md hover:bg-gray-800 transition-all active:scale-[0.98]">
+            <span className="text-xl">✨</span> Experience this story
+          </Link>
+        </div>
+      )}
+      
       <div className="prose prose-lg text-gray-700 font-serif leading-relaxed whitespace-pre-wrap border-l-2 border-accent/20 pl-6 mb-12">
         {storyData.story}
       </div>
