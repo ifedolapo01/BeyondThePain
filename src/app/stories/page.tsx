@@ -71,8 +71,8 @@ export default function StoriesPage() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-10 text-center px-4"
       >
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-4">
-          Community Stories
+        <h1 className="text-4xl font-black tracking-tight text-gray-900 mb-4">
+          Community <span className="text-accent">Stories</span>
         </h1>
         <p className="text-gray-600 max-w-xl mx-auto mb-8">
           Read real experiences from patients, caregivers, and observers. Together, we find strength in shared vulnerability.
