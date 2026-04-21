@@ -25,7 +25,7 @@ export default function StoryExperiencePage({ params }: { params: Promise<{ id: 
           // Split story into at most two sentences per chunk
           const sentences = storyText
             .match(/[^.!?]+[.!?]*\s*/g)
-            ?.map(s => s.trim()) || [storyText.trim()];
+            ?.map((s: string) => s.trim()) || [storyText.trim()];
             
           let formattedParts: StoryPart[] = [];
           for (let i = 0; i < sentences.length; i += 2) {
