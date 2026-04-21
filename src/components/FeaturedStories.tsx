@@ -19,20 +19,30 @@ export default function FeaturedStories() {
   useEffect(() => {
     const fetchStories = async () => {
       try {
-        // Fetch slightly more to account for archived stories, then take top 3
-        const q = query(collection(db, "stories"), orderBy("createdAt", "desc"), limit(10));
+        // Fetch recent stories to find the one with the most reactions
+        const q = query(collection(db, "stories"), orderBy("createdAt", "desc"), limit(20));
         const querySnapshot = await getDocs(q);
-        const fetchedStories: Story[] = [];
+        const allFetched: Story[] = [];
         querySnapshot.forEach((doc) => {
           const data = doc.data();
-          if (data.status !== 'archived' && fetchedStories.length < 3) {
-            fetchedStories.push({
+          if (data.status !== 'archived') {
+            allFetched.push({
               id: doc.id,
               ...(data as Omit<Story, 'id'>)
             });
           }
         });
-        setStories(fetchedStories);
+
+        // Sort by total reactions (empathy + strength)
+        allFetched.sort((a: any, b: any) => {
+          const aReactions = (a.empathyCount || 0) + (a.strengthCount || 0);
+          const bReactions = (b.empathyCount || 0) + (b.strengthCount || 0);
+          return bReactions - aReactions;
+        });
+
+        const topStories = allFetched.slice(0, 1);
+        console.log("Rendered Story of the week (should be 1):", topStories);
+        setStories(topStories);
       } catch (error) {
         console.error("Error fetching featured stories:", error);
       } finally {
@@ -60,10 +70,12 @@ export default function FeaturedStories() {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {stories.map(story => (
-        <StoryCard key={story.id} story={story} />
-      ))}
+    <div className="flex justify-center">
+      <div className="w-full text-left">
+        {stories.map(story => (
+          <StoryCard key={story.id} story={story} />
+        ))}
+      </div>
     </div>
   );
 }
