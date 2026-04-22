@@ -43,6 +43,17 @@ export default function StoryCard({ story }: { story: Story }) {
           <p className="text-gray-600 line-clamp-3 leading-relaxed flex-grow block">
             {story.snippet}
           </p>
+          <div className="mt-4 flex items-center text-accent font-semibold text-sm group-hover:text-accent-hover transition-colors">
+            <span>Read Full Story</span>
+            <svg 
+              className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform duration-300" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </div>
         </div>
       </Link>
     </motion.div>

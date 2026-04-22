@@ -82,19 +82,25 @@ export default function ImpactDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center items-start">
         <motion.div variants={item} className="flex flex-col items-center">
           <span className="text-4xl md:text-5xl font-black text-accent mb-2">{stats.totalStories}</span>
-          <span className="text-sm font-semibold uppercase tracking-wider text-gray-500">Stories Shared</span>
+          <span className="text-sm font-semibold uppercase tracking-wider text-gray-500">
+            {stats.totalStories === 1 ? 'Story Shared' : 'Stories Shared'}
+          </span>
           <p className="text-xs text-gray-400 mt-2 max-w-[150px]">Each journey shared lighting the path for others.</p>
         </motion.div>
 
         <motion.div variants={item} className="flex flex-col items-center">
           <span className="text-4xl md:text-5xl font-black text-[#008080] mb-2">{stats.totalInsights}</span>
-          <span className="text-sm font-semibold uppercase tracking-wider text-gray-500">Insights</span>
+          <span className="text-sm font-semibold uppercase tracking-wider text-gray-500">
+            {stats.totalInsights === 1 ? 'Insight' : 'Insights'}
+          </span>
           <p className="text-xs text-gray-400 mt-2 max-w-[150px]">Practical advice and community resources.</p>
         </motion.div>
         
         <motion.div variants={item} className="flex flex-col items-center">
           <span className="text-4xl md:text-5xl font-black text-accent mb-2">{stats.totalSupport}</span>
-          <span className="text-sm font-semibold uppercase tracking-wider text-gray-500">Acts of Support</span>
+          <span className="text-sm font-semibold uppercase tracking-wider text-gray-500">
+            {stats.totalSupport === 1 ? 'Act of Support' : 'Acts of Support'}
+          </span>
           <p className="text-xs text-gray-400 mt-2 max-w-[150px]">Hearts touched and strength shared together.</p>
         </motion.div>
       </div>
