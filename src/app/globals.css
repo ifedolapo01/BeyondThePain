@@ -25,3 +25,19 @@ body {
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
+
+@layer utilities {
+  .text-glow {
+    text-shadow: 0 0 20px rgba(139, 0, 0, 0.3), 0 0 40px rgba(139, 0, 0, 0.1);
+  }
+  
+  .text-glow-white {
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+  }
+
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+}

@@ -19,7 +19,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} min-h-screen`} suppressHydrationWarning>
       <body className="antialiased min-h-screen flex flex-col bg-background text-foreground" suppressHydrationWarning>
         <Navbar />
-        <main className="flex-grow pt-28 pb-16 px-6 max-w-5xl mx-auto w-full">
+        <main className="flex-grow pt-28 pb-16">
           {children}
         </main>
       </body>
