@@ -32,7 +32,7 @@ export default function Home() {
           variants={container}
           initial="hidden"
           animate="show"
-          className="relative z-10 text-center max-w-4xl mx-auto px-6 pt-24 pb-12 md:pt-20 md:pb-20"
+          className="relative z-10 text-center max-w-4xl mx-auto px-6 pt-48 pb-12 md:pt-40 md:pb-20"
         >
           <motion.h1 variants={item} className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-6 leading-tight drop-shadow-lg">
             Real stories. Real pain. <br />
