@@ -57,9 +57,6 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-          <Link href="/admin" className="text-gray-400 hover:text-red-400 transition-colors text-[10px] font-bold uppercase tracking-widest">
-            Admin
-          </Link>
           <Link
             href="/submit"
             className="px-5 py-2.5 rounded-full bg-accent text-white hover:bg-accent-hover transition-all shadow-sm hover:shadow-md hover:scale-105 active:scale-95"
@@ -120,19 +117,6 @@ export default function Navbar() {
                   </Link>
                 </motion.div>
               ))}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                <Link
-                  href="/admin"
-                  onClick={() => setIsOpen(false)}
-                  className="text-sm font-bold text-gray-400 uppercase tracking-widest"
-                >
-                  Admin Access
-                </Link>
-              </motion.div>
             </div>
 
             <motion.div
