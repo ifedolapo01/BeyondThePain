@@ -68,6 +68,17 @@ export default function StoryForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-xl mx-auto bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
+      {/* Community Safety Note */}
+      <div className="p-4 bg-amber-50/50 border border-amber-200/60 rounded-xl flex items-start gap-3 text-left">
+        <span className="text-amber-600 text-lg leading-none mt-0.5">⚠️</span>
+        <div className="space-y-1">
+          <h4 className="text-sm font-bold text-amber-950">Community Safety Note</h4>
+          <p className="text-xs text-amber-800 leading-relaxed">
+            Please be mindful and careful of what you share. To keep this a supportive and healing space, do not post any demeaning, insulting, or disrespectful messages.
+          </p>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label htmlFor="authorName" className="block text-sm font-medium text-gray-700 mb-1">

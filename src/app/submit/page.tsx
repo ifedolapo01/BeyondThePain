@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import StoryForm from '@/components/StoryForm';
 import ResourceForm from '@/components/ResourceForm';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -8,14 +8,9 @@ import { useSearchParams } from 'next/navigation';
 
 function SubmitFormContent() {
   const searchParams = useSearchParams();
-  const [activeTab, setActiveTab] = useState<'story' | 'resource'>('story');
+  const initialTab = searchParams.get('type') === 'resource' ? 'resource' : 'story';
+  const [activeTab, setActiveTab] = useState<'story' | 'resource'>(initialTab);
 
-  useEffect(() => {
-    const type = searchParams.get('type');
-    if (type === 'resource') {
-      setActiveTab('resource');
-    }
-  }, [searchParams]);
 
   return (
     <>

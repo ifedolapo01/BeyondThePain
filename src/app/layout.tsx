@@ -17,6 +17,24 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} min-h-screen`} suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then((registrations) => {
+                  if (registrations.length > 0) {
+                    Promise.all(registrations.map(r => r.unregister())).then(() => {
+                      console.log('Stale service worker(s) cleared. Reloading page...');
+                      window.location.reload();
+                    });
+                  }
+                });
+              }
+            `,
+          }}
+        />
+      </head>
       <body className="antialiased min-h-screen flex flex-col bg-background text-foreground" suppressHydrationWarning>
         <Navbar />
         <main className="flex-grow pt-28 pb-16">

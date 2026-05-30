@@ -24,7 +24,7 @@ export default function AdminLoginPage() {
       // Initialize activity timestamp for the session
       localStorage.setItem('admin_last_active', Date.now().toString());
       router.push('/admin');
-    } catch (err: any) {
+    } catch (err) {
       console.error("Login error:", err);
       setError('Invalid email or password. Please try again.');
     } finally {

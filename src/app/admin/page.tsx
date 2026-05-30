@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   collection, 
   getDocs, 
@@ -12,7 +12,7 @@ import {
   collectionGroup,
   where
 } from 'firebase/firestore';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { onAuthStateChanged, signOut, type User } from 'firebase/auth';
 import { db, auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -34,6 +34,7 @@ interface ModerateItem {
   category?: string;
   isComment?: boolean;
   parentStoryId?: string;
+  createdAt?: { seconds: number } | null;
 }
 
 interface CommentItem {
@@ -45,7 +46,7 @@ interface CommentItem {
 }
 
 export default function AdminDashboard() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>('stories');
   const [viewMode, setViewMode] = useState<ViewMode>('active');
@@ -79,33 +80,13 @@ export default function AdminDashboard() {
     return () => unsubscribe();
   }, [router]);
 
-  // Data Fetching
-  useEffect(() => {
-    if (!user) return;
-    fetchData();
-    setExpandedItemId(null); // Reset expansion when changing tabs or views
-  }, [user, activeTab, viewMode]);
-
-  // Handle tab visibility logic
-  useEffect(() => {
-    if (viewMode === 'active' && activeTab === 'comments') {
-      setActiveTab('stories');
-    }
-  }, [viewMode, activeTab]);
-
-  // Fetch comments when a story is expanded
-  useEffect(() => {
-    if (expandedItemId && activeTab === 'stories') {
-      fetchStoryComments(expandedItemId);
-    }
-  }, [expandedItemId, activeTab]);
-
-  const fetchData = async () => {
+  // Declared before effects to satisfy react-hooks/immutability
+  const fetchData = useCallback(async () => {
     setIsFetching(true);
     setFetchError(null);
     try {
-      let fetchedItems: ModerateItem[] = [];
-      
+      const fetchedItems: ModerateItem[] = [];
+
       if (activeTab === 'comments') {
         // Only fetch archived comments for this tab
         try {
@@ -115,13 +96,20 @@ export default function AdminDashboard() {
             const data = docSnap.data();
             const pathParts = docSnap.ref.path.split('/');
             const storyId = pathParts[1];
-            
             fetchedItems.push({
               id: docSnap.id,
               type: 'stories',
               isComment: true,
               parentStoryId: storyId,
-              ...data as any
+              title: data.title as string | undefined,
+              content: data.content as string | undefined,
+              story: data.story as string | undefined,
+              snippet: data.snippet as string | undefined,
+              authorName: data.authorName as string | undefined,
+              status: data.status as string | undefined,
+              moderationReason: data.moderationReason as string | undefined,
+              category: data.category as string | undefined,
+              createdAt: data.createdAt as { seconds: number } | null | undefined,
             });
           });
         } catch (err) {
@@ -131,32 +119,39 @@ export default function AdminDashboard() {
         const collectionName = activeTab === 'stories' ? "stories" : "resources";
         const q = query(collection(db, collectionName), orderBy("createdAt", "desc"));
         const snap = await getDocs(q);
-        
         snap.forEach(docSnap => {
           const data = docSnap.data();
           const isArchived = data.status === 'archived';
-          
           if ((viewMode === 'active' && !isArchived) || (viewMode === 'archived' && isArchived)) {
             fetchedItems.push({
               id: docSnap.id,
               type: activeTab,
-              ...data as any
+              title: data.title as string | undefined,
+              content: data.content as string | undefined,
+              story: data.story as string | undefined,
+              snippet: data.snippet as string | undefined,
+              authorName: data.authorName as string | undefined,
+              status: data.status as string | undefined,
+              moderationReason: data.moderationReason as string | undefined,
+              category: data.category as string | undefined,
+              createdAt: data.createdAt as { seconds: number } | null | undefined,
             });
           }
         });
       }
 
       // Sort results by createdAt if available
-      fetchedItems.sort((a: any, b: any) => {
-        const timeA = a.createdAt?.seconds || 0;
-        const timeB = b.createdAt?.seconds || 0;
+      fetchedItems.sort((a, b) => {
+        const timeA = a.createdAt?.seconds ?? 0;
+        const timeB = b.createdAt?.seconds ?? 0;
         return timeB - timeA;
       });
-      
+
       setItems(fetchedItems);
-    } catch (error: any) {
+    } catch (error) {
+      const e = error as { code?: string; message?: string };
       console.error("Error fetching data:", error);
-      if (error.code === 'failed-precondition' || error.message?.includes('index')) {
+      if (e.code === 'failed-precondition' || e.message?.includes('index')) {
         setFetchError("This query requires a Firestore index. Please check your browser console for the direct link to create it, or wait a few minutes if you just created it.");
       } else {
         setFetchError("Failed to fetch data from the database.");
@@ -164,9 +159,9 @@ export default function AdminDashboard() {
     } finally {
       setIsFetching(false);
     }
-  };
+  }, [activeTab, viewMode]);
 
-  const fetchStoryComments = async (storyId: string) => {
+  const fetchStoryComments = useCallback(async (storyId: string) => {
     setIsFetchingComments(true);
     try {
       const q = query(collection(db, "stories", storyId, "comments"), orderBy("createdAt", "desc"));
@@ -176,7 +171,10 @@ export default function AdminDashboard() {
         const data = docSnap.data();
         comments.push({
           id: docSnap.id,
-          ...data as any
+          authorName: data.authorName as string,
+          content: data.content as string,
+          status: data.status as string | undefined,
+          moderationReason: data.moderationReason as string | undefined,
         });
       });
       setStoryComments(comments);
@@ -185,7 +183,23 @@ export default function AdminDashboard() {
     } finally {
       setIsFetchingComments(false);
     }
-  };
+  }, []);
+
+  // Data Fetching — setExpandedItemId(null) is handled by the tab/view-mode click handlers
+  useEffect(() => {
+    if (!user) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchData();
+  }, [user, activeTab, viewMode, fetchData]);
+
+  // Fetch comments when a story is expanded
+  useEffect(() => {
+    if (expandedItemId && activeTab === 'stories') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      fetchStoryComments(expandedItemId);
+    }
+  }, [expandedItemId, activeTab, fetchStoryComments]);
+
 
   const handleArchive = async () => {
     if (!archiveTarget || !reason.trim()) return;
@@ -205,7 +219,7 @@ export default function AdminDashboard() {
           status: 'archived',
           moderationReason: reason.trim(),
           moderatedAt: serverTimestamp(),
-          moderatedBy: user.uid
+          moderatedBy: user?.uid
         });
         
         // Update UI
@@ -332,7 +346,7 @@ export default function AdminDashboard() {
             .map((tab) => (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab)}
+              onClick={() => { setActiveTab(tab); setExpandedItemId(null); }}
               className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
                 activeTab === tab 
                   ? 'bg-white text-gray-900 shadow-sm' 
@@ -347,7 +361,7 @@ export default function AdminDashboard() {
           {/* View Mode Toggle */}
           <div className="flex bg-white items-center p-1 rounded-2xl border border-gray-100 shadow-sm w-fit">
           <button
-            onClick={() => setViewMode('active')}
+            onClick={() => { if (activeTab === 'comments') setActiveTab('stories'); setViewMode('active'); setExpandedItemId(null); }}
             className={`px-6 py-2 rounded-xl text-xs font-bold transition-all ${
               viewMode === 'active' 
                 ? 'bg-green-50 text-green-700' 
@@ -357,7 +371,7 @@ export default function AdminDashboard() {
             Published
           </button>
           <button
-            onClick={() => setViewMode('archived')}
+            onClick={() => { setViewMode('archived'); setExpandedItemId(null); }}
             className={`px-6 py-2 rounded-xl text-xs font-bold transition-all ${
               viewMode === 'archived' 
                 ? 'bg-red-50 text-red-700' 
@@ -460,7 +474,7 @@ export default function AdminDashboard() {
                     {item.moderationReason && (
                       <div className="mt-4 p-4 bg-red-50/50 border border-red-100 rounded-2xl">
                         <p className="text-[10px] uppercase tracking-widest font-black text-red-500 mb-1">Moderation Reason</p>
-                        <p className="text-red-700 text-sm italic">"{item.moderationReason}"</p>
+                        <p className="text-red-700 text-sm italic">&ldquo;{item.moderationReason}&rdquo;</p>
                       </div>
                     )}
                   </div>

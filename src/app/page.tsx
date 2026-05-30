@@ -89,7 +89,7 @@ export default function Home() {
             </div>
             <div className="md:w-2/3 text-gray-600 leading-relaxed font-medium text-xl space-y-6">
               <p>For a long time, many of my experiences living with Sickle cell disease felt difficult to explain to others.</p>
-              <p>This platform was created to bridge that gap to give people a way to share, listen, and understand what life really feels like beyond the surface.</p>
+              <p>This platform was created to bridge that gap to give people a way to share, listen and understand what life really feels like beyond the surface.</p>
               <p>Because sometimes, the most powerful way to create awareness is simply to listen.</p>
             </div>
           </motion.div>

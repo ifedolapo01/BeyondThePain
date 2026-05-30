@@ -10,6 +10,8 @@ interface Story {
   title: string;
   category: "Patient" | "Caregiver" | "Observer";
   snippet: string;
+  empathyCount?: number;
+  strengthCount?: number;
 }
 
 export default function FeaturedStories() {
@@ -34,7 +36,7 @@ export default function FeaturedStories() {
         });
 
         // Sort by total reactions (empathy + strength)
-        allFetched.sort((a: any, b: any) => {
+        allFetched.sort((a, b) => {
           const aReactions = (a.empathyCount || 0) + (a.strengthCount || 0);
           const bReactions = (b.empathyCount || 0) + (b.strengthCount || 0);
           return bReactions - aReactions;

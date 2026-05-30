@@ -9,7 +9,7 @@ export interface Resource {
   sentiment?: 'Recommended' | 'Wary';
   content: string;
   authorName?: string;
-  createdAt: any;
+  createdAt?: { seconds: number } | null;
 }
 
 export default function ResourceCard({ resource }: { resource: Resource }) {

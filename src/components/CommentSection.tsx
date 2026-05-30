@@ -10,7 +10,8 @@ interface Comment {
   id: string;
   authorName: string;
   content: string;
-  createdAt: any;
+  createdAt?: { seconds: number } | null;
+  status?: string;
 }
 
 export default function CommentSection({ storyId }: { storyId: string }) {
@@ -28,8 +29,17 @@ export default function CommentSection({ storyId }: { storyId: string }) {
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const fetchedComments = snapshot.docs
-        .map(doc => ({ id: doc.id, ...doc.data() } as any))
-        .filter(comment => comment.status !== 'archived') as Comment[];
+        .map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            authorName: data.authorName as string,
+            content: data.content as string,
+            createdAt: data.createdAt ?? null,
+            status: data.status as string | undefined,
+          } as Comment;
+        })
+        .filter(comment => comment.status !== 'archived');
       setComments(fetchedComments);
       setLoading(false);
     });
@@ -85,6 +95,13 @@ export default function CommentSection({ storyId }: { storyId: string }) {
         {/* Comment Form */}
         <form onSubmit={handleSubmit} className="bg-gray-50/50 p-6 rounded-3xl border border-gray-100 mb-10">
           <div className="space-y-4">
+            {/* Safety Warning */}
+            <div className="p-3 bg-amber-50/40 border border-amber-200/50 rounded-xl flex items-start gap-2.5 text-left">
+              <span className="text-amber-600 text-sm leading-none mt-0.5">⚠️</span>
+              <p className="text-xs text-amber-850 leading-relaxed">
+                Please keep comments supportive and respectful. Insulting or demeaning language will not be tolerated.
+              </p>
+            </div>
             <input
               type="text"
               placeholder="Your Name (Optional)"
