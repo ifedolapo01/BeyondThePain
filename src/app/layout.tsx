@@ -8,6 +8,9 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 export const metadata: Metadata = {
   title: 'Beyond the Pain',
   description: 'A platform to share your experiences, emotionally and mentally.',
+  icons: {
+    icon: '/logo.png',
+  },
 };
 
 export default function RootLayout({
