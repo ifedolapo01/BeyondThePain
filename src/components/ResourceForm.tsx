@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { collection, doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db, storage } from "@/lib/firebase";
+import MediaUploader from "@/components/MediaUploader";
 import { motion } from "framer-motion";
 
 type Category = 'Treatment' | 'Hospital' | 'Lifestyle' | 'General';
@@ -18,6 +20,7 @@ export default function ResourceForm() {
   });
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mediaFiles, setMediaFiles] = useState<{images: File[], video: File | null}>({ images: [], video: null });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,12 +29,34 @@ export default function ResourceForm() {
     try {
       const finalName = form.authorName.trim() === "" ? "Anonymous" : form.authorName.trim();
 
-      await addDoc(collection(db, "resources"), {
+      const newDocRef = doc(collection(db, "resources"));
+
+      let mediaUrls: string[] = [];
+      let videoUrl: string | null = null;
+
+      if (mediaFiles.images.length > 0) {
+        for (const file of mediaFiles.images) {
+          const fileRef = ref(storage, `resources/${newDocRef.id}/${file.name}`);
+          await uploadBytes(fileRef, file);
+          const url = await getDownloadURL(fileRef);
+          mediaUrls.push(url);
+        }
+      }
+
+      if (mediaFiles.video) {
+        const videoRef = ref(storage, `resources/${newDocRef.id}/${mediaFiles.video.name}`);
+        await uploadBytes(videoRef, mediaFiles.video);
+        videoUrl = await getDownloadURL(videoRef);
+      }
+
+      await setDoc(newDocRef, {
         title: form.title,
         category: form.category,
         sentiment: form.category === 'Hospital' ? form.sentiment : null,
         content: form.content,
         authorName: finalName,
+        mediaUrls: mediaUrls.length > 0 ? mediaUrls : null,
+        videoUrl: videoUrl,
         createdAt: serverTimestamp(),
       });
       setSubmitted(true);
@@ -54,6 +79,7 @@ export default function ResourceForm() {
         <button
           onClick={() => {
             setForm({ title: "", category: "General", sentiment: "Recommended", content: "", authorName: "" });
+            setMediaFiles({ images: [], video: null });
             setSubmitted(false);
           }}
           className="px-6 py-2.5 rounded-full bg-[#008080] text-white hover:bg-[#006666] transition-colors font-medium shadow-sm"
@@ -172,6 +198,12 @@ export default function ResourceForm() {
           onChange={(e) => setForm({ ...form, content: e.target.value })}
         />
       </div>
+
+      <MediaUploader 
+        onFilesChange={(files) => setMediaFiles(files)} 
+        maxImages={4}
+        maxVideo={1}
+      />
 
       <button
         type="submit"

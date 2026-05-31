@@ -16,6 +16,8 @@ interface Story {
   authorAge?: string;
   empathyCount?: number;
   strengthCount?: number;
+  mediaUrls?: string[];
+  videoUrl?: string;
 }
 
 export default function StoryPage({ params }: { params: Promise<{ id: string }> }) {
@@ -130,6 +132,26 @@ export default function StoryPage({ params }: { params: Promise<{ id: string }> 
           <Link href={`/stories/${id}/experience`} className="inline-flex items-center gap-2 bg-black text-white px-8 py-3 rounded-full font-medium shadow-md hover:bg-gray-800 transition-all active:scale-[0.98]">
             <span className="text-xl">✨</span> Experience this story
           </Link>
+        </div>
+      )}
+
+      {(storyData.mediaUrls || storyData.videoUrl) && (
+        <div className="mb-10 space-y-6">
+          {storyData.videoUrl && (
+            <div className="rounded-2xl overflow-hidden bg-black max-h-[500px]">
+              <video src={storyData.videoUrl} controls className="w-full h-full object-contain" />
+            </div>
+          )}
+          {storyData.mediaUrls && storyData.mediaUrls.length > 0 && (
+            <div className={`grid gap-4 ${storyData.mediaUrls.length === 1 ? 'grid-cols-1' : 'grid-cols-2 md:grid-cols-2'}`}>
+              {storyData.mediaUrls.map((url, i) => (
+                <div key={i} className="rounded-2xl overflow-hidden bg-gray-100 aspect-video max-h-[400px]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={url} alt={`Story visual ${i + 1}`} className="w-full h-full object-cover" />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
       

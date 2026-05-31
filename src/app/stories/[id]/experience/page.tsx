@@ -22,23 +22,38 @@ export default function StoryExperiencePage({ params }: { params: Promise<{ id: 
           const data = docSnap.data();
           const storyText = data.story || "";
           
-          // Split story into at most two sentences per chunk
-          const sentences = storyText
-            .match(/[^.!?]+[.!?]*\s*/g)
-            ?.map((s: string) => s.trim()) || [storyText.trim()];
+          // Split story into readable chunks by punctuation or newlines
+          const rawSentences = storyText
+            .match(/[^.!?\n]+[.!?\n]*\s*/g)
+            ?.map((s: string) => s.trim())
+            .filter(Boolean) || [storyText.trim()];
+            
+          const sentences: string[] = [];
+          
+          // Further split extremely long chunks (e.g., if user skipped punctuation)
+          rawSentences.forEach((sentence: string) => {
+            const words = sentence.split(/\s+/);
+            if (words.length > 40) {
+                for (let i = 0; i < words.length; i += 30) {
+                    sentences.push(words.slice(i, i + 30).join(" ") + (i + 30 < words.length ? "..." : ""));
+                }
+            } else {
+                sentences.push(sentence);
+            }
+          });
             
           let formattedParts: StoryPart[] = [];
           
-          // Add introductory prompt as a standalone part
-          if (sentences.length > 2) {
-              formattedParts.push({ text: "", prompt: "Pause. Step into their shoes for a moment." });
-          }
+          // Always add introductory prompt as a standalone part
+          formattedParts.push({ text: "", prompt: "Pause. Step into their shoes for a moment." });
 
-          for (let i = 0; i < sentences.length; i += 2) {
-              const chunk = sentences.slice(i, i + 2).join(" ").trim();
+          const middleIndex = Math.floor(sentences.length / 2);
+
+          for (let i = 0; i < sentences.length; i++) {
+              const chunk = sentences[i].trim();
               if (chunk.length > 0) {
                   let prompt;
-                  if (i === Math.floor(sentences.length / 2)) prompt = "Take a breath.";
+                  if (sentences.length >= 2 && i === middleIndex && i > 0) prompt = "Take a breath.";
                   
                   formattedParts.push({ text: chunk, prompt });
               }

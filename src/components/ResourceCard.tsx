@@ -10,6 +10,8 @@ export interface Resource {
   content: string;
   authorName?: string;
   createdAt?: { seconds: number } | null;
+  mediaUrls?: string[];
+  videoUrl?: string;
 }
 
 export default function ResourceCard({ resource }: { resource: Resource }) {
@@ -36,7 +38,17 @@ export default function ResourceCard({ resource }: { resource: Resource }) {
           <span className="text-xs font-bold tracking-widest text-[#008080] uppercase px-2 py-1 bg-[#008080]/5 rounded-md">
             {resource.category}
           </span>
+          {resource.videoUrl && (
+             <span className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-md font-medium shadow-sm">🎬 Video</span>
+          )}
         </div>
+
+        {resource.mediaUrls && resource.mediaUrls.length > 0 && (
+          <div className="mb-4 -mx-6 h-48 overflow-hidden relative border-y border-gray-100 bg-gray-50">
+             {/* eslint-disable-next-line @next/next/no-img-element */}
+             <img src={resource.mediaUrls[0]} alt="Resource visual" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          </div>
+        )}
 
         <h2 className="font-bold text-lg mb-3 text-gray-900 group-hover:text-[#008080] transition-colors block">
           {resource.title}

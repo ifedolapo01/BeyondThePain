@@ -14,6 +14,8 @@ interface Story {
   snippet: string;
   authorName?: string;
   authorAge?: string;
+  mediaUrls?: string[];
+  videoUrl?: string;
 }
 
 export default function StoriesPage() {
@@ -39,7 +41,9 @@ export default function StoriesPage() {
             category: data.category,
             snippet: data.snippet,
             authorName: data.authorName,
-            authorAge: data.authorAge
+            authorAge: data.authorAge,
+            mediaUrls: data.mediaUrls,
+            videoUrl: data.videoUrl
           });
         });
         setStories(fetchedStories);
