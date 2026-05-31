@@ -40,11 +40,11 @@ export default function Navbar() {
       <div className="max-w-5xl mx-auto flex items-center justify-between px-6 py-4">
         <Link 
           href="/" 
-          className="text-xl font-bold tracking-tight text-accent transition-colors hover:text-accent-hover z-50 flex items-center gap-2"
+          className="text-xl font-bold tracking-tight text-accent transition-colors hover:text-accent-hover z-50 flex items-center"
           onClick={() => setIsOpen(false)}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="Beyond the Pain Logo" className="h-8 w-auto object-contain drop-shadow-sm" />
+          <img src="/logo.png" alt="Beyond the Pain Logo" className="h-14 w-auto object-contain drop-shadow-sm -ml-2 -mr-1 scale-125 origin-center" />
           Beyond the Pain
         </Link>
 
