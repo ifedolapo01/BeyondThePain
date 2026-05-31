@@ -43,8 +43,10 @@ export default function Navbar() {
           className="text-xl font-bold tracking-tight text-accent transition-colors hover:text-accent-hover z-50 flex items-center"
           onClick={() => setIsOpen(false)}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="Beyond the Pain Logo" className="h-14 w-auto object-contain drop-shadow-sm -ml-2 -mr-1 scale-125 origin-center" />
+          <div className="relative w-8 h-8 flex items-center justify-center -ml-1 mr-1.5 shrink-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="Beyond the Pain Logo" className="absolute w-[220%] max-w-none h-auto object-contain drop-shadow-sm pointer-events-none" />
+          </div>
           Beyond the Pain
         </Link>
 
