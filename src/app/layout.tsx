@@ -8,6 +8,28 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 export const metadata: Metadata = {
   title: 'Beyond the Pain',
   description: 'A platform to share your experiences, emotionally and mentally.',
+  keywords: ['beyond the pain', 'mental health', 'emotional support', 'stories', 'experiences'],
+  openGraph: {
+    title: 'Beyond the Pain',
+    description: 'A platform to share your experiences, emotionally and mentally.',
+    url: 'https://beyondthepain.vercel.app',
+    siteName: 'Beyond the Pain',
+    images: [
+      {
+        url: '/logo.png', // Assuming logo.png is in public folder
+        width: 800,
+        height: 600,
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Beyond the Pain',
+    description: 'A platform to share your experiences, emotionally and mentally.',
+    images: ['/logo.png'],
+  },
   icons: {
     icon: '/logo.png',
   },
